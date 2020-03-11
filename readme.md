@@ -11,7 +11,7 @@ git clone https://github.com/henro-org/ohenrochain.git
 
 ディレクトリへ移動
 ```sh
-cd henrochain
+cd ohenrochain
 ```
 
 インストールする
