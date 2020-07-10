@@ -5,7 +5,8 @@ const ChainUtil = require('../chain-util');
 const Transaction = require('./transaction');
 
 class Wallet {
-  constructor() {
+  constructor(config) {
+    this.config = config;
     this.balance = INITIAL_BALANCE;
     this.keyPair = ChainUtil.genKeyPair();
     this.publicKey = this.keyPair.getPublic().encode('hex');
@@ -21,7 +22,7 @@ class Wallet {
     return this.keyPair.sign(dataHash);
   }
 
-  createTransaction(recipient, amount, blockchain, transactionPool) {
+  createTransaction(recipient, amount, blockchain, transactionPool, extra) {
 
     this.balance = this.calculateBalance(blockchain);
 
@@ -34,7 +35,7 @@ class Wallet {
     if (transaction) {
       transaction.update(this, recipient, amount);
     } else {
-      transaction = Transaction.newTransaction(this, recipient, amount);
+      transaction = Transaction.newTransaction(this, recipient, amount, extra);
       transactionPool.updateOrAddTransaction(transaction);
     }
 

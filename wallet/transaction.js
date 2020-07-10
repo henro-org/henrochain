@@ -32,7 +32,7 @@ class Transaction {
     return transaction;
   }
 
-  static newTransaction(senderWallet, recipient, amount) {
+  static newTransaction(senderWallet, recipient, amount, extra) {
     if (amount > senderWallet.balance) {
       console.log(`Amount: ${amount} exceeds balance.`);
       return;
@@ -40,7 +40,8 @@ class Transaction {
 
     return Transaction.transactionWithOutputs(senderWallet, [
       { amount: senderWallet.balance - amount, address: senderWallet.publicKey },
-      { amount, address: recipient }
+      { amount, address: recipient },
+      {extra:extra}
     ]);
   };
 

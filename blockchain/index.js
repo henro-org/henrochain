@@ -1,8 +1,9 @@
 const Block = require('./block')
 
 class Blockchain {
-  constructor() {
-    this.chain = [Block.genesis()]
+  constructor(config) {
+    this.config = config;
+    this.chain = [Block.genesis()];
   }
 
   addBlock(data) {

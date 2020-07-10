@@ -2,7 +2,8 @@ const Transaction = require('../wallet/transaction');
 
 class TransactionPool {
 
-  constructor() {
+  constructor(config) {
+    this.config = config;
     this.transactions = [];
   }
 

@@ -4,11 +4,12 @@ const Transaction = require('../wallet/transaction');
 
 class Miner {
 
-  constructor(blockchain, transactionPool, wallet, p2pServer) {
+  constructor(blockchain, transactionPool, wallet, p2pServer, config) {
     this.blockchain = blockchain;
     this.transactionPool = transactionPool;
     this.wallet = wallet;
     this.p2pServer = p2pServer;
+    this.config = config;
   }
 
   mine() {
