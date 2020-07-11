@@ -29,12 +29,6 @@ npm run test
 ```sh
 # Starting first peer
 npm run dev
-
-# Starting second peer
-HTTP_PORT=3002 P2P_PORT=5002 PEERS=ws://localhost:5001 npm run dev
-
-# Starting third peer
-HTTP_PORT=3003 P2P_PORT=5003 PEERS=ws://localhost:5001,ws://localhost:5002 npm run dev
 ```
 
 ### docker-composeを利用してアプリを実行する
