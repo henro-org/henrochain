@@ -4,10 +4,10 @@ const url = require('url');
 const Swarm = require('discovery-swarm');
 const defaults = require('dat-swarm-defaults');
 const tcpscan = require('simple-tcpscan');
-const Websocket = require('ws');
-const ip = require('ip');
+//const Websocket = require('ws');
+//const ip = require('ip');
 const publicIp = require('public-ip');
-const MESSAGE_TYPES = require('./mtypes');
+//const MESSAGE_TYPES = require('./mtypes');
 
 class Peer{
   constructor(config){

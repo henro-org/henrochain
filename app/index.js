@@ -60,12 +60,7 @@ if(options.help) {
   process.exit(0);
 }
 
-var userHome = process.env[process.platform == "win32" ? "USERPROFILE" : "HOME"];
-if(options.home_dir) userHome = home_dir;
-const chaindir = path.join(userHome,".henrochain");
-if(!fs.existsSync(chaindir)){
-  fs.mkdirSync(chaindir, {recursive: true});
-}
+
 
 const app = express();
 const nodeidpath = path.join(chaindir,".nodeid");
