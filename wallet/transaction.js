@@ -1,10 +1,11 @@
 'use strict';
 
 const ChainUtil = require('../chain-util');
-const { MINING_REWARD } = require('../config');
+//const { MINING_REWARD } = require('../config');
 
 class Transaction {
-  constructor() {
+  constructor(config) {
+    this.config = config;
     this.id = ChainUtil.id();
     this.input = null;
     this.outputs = [];
@@ -45,9 +46,9 @@ class Transaction {
     ]);
   };
 
-  static rewardTransaction(minerWallet, blockchainWallet) {
+  static rewardTransaction(minerWallet, blockchainWallet, mining_reward) {
     return Transaction.transactionWithOutputs(blockchainWallet, [{
-      amount: MINING_REWARD, address: minerWallet.publicKey
+      amount: mining_reward, address: minerWallet.publicKey
     }]);
   };
 

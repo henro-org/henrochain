@@ -1,13 +1,13 @@
 'use strict';
 
-const { INITIAL_BALANCE } = require('../config');
+//const { INITIAL_BALANCE } = require('../config');
 const ChainUtil = require('../chain-util');
 const Transaction = require('./transaction');
 
 class Wallet {
   constructor(config) {
     this.config = config;
-    this.balance = INITIAL_BALANCE;
+    this.balance = config.get("INITIAL_BALANCE");
     this.keyPair = ChainUtil.genKeyPair();
     this.publicKey = this.keyPair.getPublic().encode('hex');
   }
