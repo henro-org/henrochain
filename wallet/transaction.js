@@ -21,8 +21,8 @@ data:{
 }
 */
 class Transaction {
-  constructor(config) {
-    this.config = config;
+  constructor() {
+    //this.config = config;
     this.id = ChainUtil.id();
     this.meta = {};
     this.data = {};
@@ -50,7 +50,7 @@ class Transaction {
     return transaction;
   }
 
-  static newTransaction(senderWallet, recipient, amount, extra) {
+  static newTransaction(senderWallet, recipient, amount, fee, extra) {
     if (amount > senderWallet.balance) {
       console.log(`Amount: ${amount} exceeds balance.`);
       return;
@@ -60,7 +60,7 @@ class Transaction {
       amount:amount,
       from: senderWallet.publicKey,
       to:recipient,
-      fee:0.0001,
+      fee:fee,
       extra:extra
     });
   };
