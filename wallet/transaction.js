@@ -6,7 +6,6 @@ const ChainUtil = require('../chain-util');
 {
 id:"a123ewgt",
 meta:{timestamp: Date.now(),
-  status:0,
   block:"",
   address:"kbcj212ieq",
   type:"",
@@ -75,7 +74,6 @@ class Transaction {
     transaction.meta = {
       timestamp: Date.now(),
       address: senderWallet.publicKey,
-      status:0,
       block:"",
       type:0,
       network:"",
