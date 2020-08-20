@@ -15,16 +15,16 @@ class TransactionPool {
       this.transactions.push(transaction);
     };
   };
-
+/*
   existingTransaction(address) {
     return this.transactions.find(t => {
       return t.input.address === address
     });
   };
-
+*/
   validTransactions() {
     return this.transactions.filter(transaction => {
-
+      /*
       const outputTotal = transaction.outputs.reduce((total, output) => {
         return total + output.amount;
       }, 0);
@@ -33,6 +33,7 @@ class TransactionPool {
         console.log(`Invalid transaction from ${transaction.input.address}`);
         return;
       }
+      */
 
       if (!Transaction.verifyTransaction(transaction)) {
         console.log(`Invalid signature from ${transaction.input.address}`);
