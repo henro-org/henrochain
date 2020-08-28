@@ -21,10 +21,14 @@ data:{
 */
 class Transaction {
   constructor() {
-    //this.config = config;
+    this.config = null;
     this.id = ChainUtil.id();
     this.meta = {};
     this.data = {};
+  }
+
+  setConfig(config){
+    this.config = config;
   }
 /*
   update(senderWallet, recipient, amount) {

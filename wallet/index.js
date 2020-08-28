@@ -12,6 +12,10 @@ class Wallet {
     this.publicKey = this.keyPair.getPublic().encode('hex');
   }
 
+  setConfig(config) {
+    this.config = config;
+  }
+
   toString() {
     return `Wallet -
         publicKey: ${this.publicKey.toString()}

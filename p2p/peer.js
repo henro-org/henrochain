@@ -11,6 +11,7 @@ const publicIp = require('public-ip');
 
 class Peer{
   constructor(config){
+
     this.config = config;
     this.filepath = path.join(this.config.getHomeDir(),".peers");
     this.DISCOVERY_PORT = process.env.DISCOVERY_PORT || this.config.get("DISCOVERY_PORT");
@@ -34,6 +35,10 @@ class Peer{
     this.sw = Swarm(this.discovery_config);
     this.checkinterval = setInterval(this._checkPeers,1000*60*10);
     this._checkPeers();
+  }
+
+  setConfig(config){
+    this.config = config;
   }
 
   _load(){
