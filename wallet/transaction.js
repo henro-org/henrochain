@@ -19,6 +19,7 @@ data:{
   extra:""}
 }
 */
+
 class Transaction {
   constructor() {
     this.config = null;

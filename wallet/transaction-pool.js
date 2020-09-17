@@ -7,7 +7,6 @@ class TransactionPool {
     this.transactions = [];
   }
 
-  
   updateOrAddTransaction(transaction) {
     let transactionWithId = this.transactions.find(t => t.id == transaction.id);
     if (transactionWithId) {
