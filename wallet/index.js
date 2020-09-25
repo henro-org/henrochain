@@ -4,6 +4,7 @@
 const ChainUtil = require('../chain-util');
 const Transaction = require('./transaction');
 
+
 class Wallet {
   constructor(config) {
     this.config = config;

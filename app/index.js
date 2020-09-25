@@ -16,6 +16,7 @@ const TransactionPool = require('../wallet/transaction-pool');
 const Miner = require('./miner');
 const Config = require('./config');
 
+
 const optionDefinitions = [
   {
     name: 'verbose',

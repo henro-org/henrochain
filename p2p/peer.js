@@ -9,7 +9,6 @@ const tcpscan = require('simple-tcpscan');
 const publicIp = require('public-ip');
 //const MESSAGE_TYPES = require('./mtypes');
 
-
 class Peer{
   constructor(config){
 
