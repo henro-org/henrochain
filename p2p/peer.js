@@ -5,7 +5,7 @@ const Swarm = require('discovery-swarm');
 const defaults = require('dat-swarm-defaults');
 const tcpscan = require('simple-tcpscan');
 //const Websocket = require('ws');
-//const ip = require('ip');
+const localIp = require('ip');
 const publicIp = require('public-ip');
 //const MESSAGE_TYPES = require('./mtypes');
 
@@ -15,38 +15,46 @@ class Peer{
     this.config = config;
     this.filepath = path.join(this.config.getHomeDir(),".peers");
     this.DISCOVERY_PORT = process.env.DISCOVERY_PORT || this.config.get("DISCOVERY_PORT");
+    this.NETWORK_KEY = process.env.NETWORK_KEY || this.config.get("NETWORK_KEY");
+    this.P2P_PORT = process.env.P2P_PORT || this.config.get("P2P_PORT");
     this.peers = {};
     this.sockets = {};
+    this.publicip = null;
+    this.nodeid = null;
+    /*
     this.unknown_peers = [];
-    this._load();
+    //this._load();
     var env_peers = process.env.PEERS ? process.env.PEERS.split(',') : [];
     for(var i in env_peers){
-        var u = url.parse(env_peers[i],true);
-        var p = {hostname:u.hostname, port:u.port, status:-1, id:"", failed:0};
+        var peer_url; 
+        var peer_id;
+        if(env_peers[i].indexOf("@") > -1){
+          peer_url = env_peers[i].split("@")[0];
+          peer_id = env_peers[i].split("@")[1];
+        }else{
+          peer_url = env_peer[i];
+          peer_id = "";
+        }
+        var u = url.parse(peer_url,true);
+        var p = {hostname:u.hostname, port:u.port, status:-1, id:peer_id, failed:0};
         this.unknown_peers.push(p);
-    }
-    this.nodeid = fs.readFileSync(path.join(this.config.getHomeDir(),".nodeid"),'utf8');
-    this.discovery_config = defaults({
-        id:this.nodeid,
-        maxConnections:50,
-        //whitelist:this.getPeerIps(),
-        keepExistingConnections: true 
-    });
-    this.sw = Swarm(this.discovery_config);
-    this.checkinterval = setInterval(this._checkPeers,1000*60*10);
-    this._checkPeers();
+    }*/
+    
+    //this.checkinterval = setInterval(this._checkPeers,1000*60*10);
+    //this._checkPeers();
   }
 
   setConfig(config){
     this.config = config;
   }
-
+/*
   _load(){
     if(fs.existsSync(this.filepath)){
       var speers = fs.readFileSync(this.filepath,'utf8');
       this.peers =  JSON.parse(speers);
     }
   }
+  */
   _save(){
     fs.writeFileSync(this.filepath,JSON.stringify(this.peers,undefined,'\t'),'utf8');
   }
@@ -114,7 +122,7 @@ class Peer{
     this.setPeer(peer,true);
     sockets[peer.id] = socket;
   }*/
-
+/*
   _checkPeers(){
     Object.keys(this.peers).forEach(function(key){
         var peer = this.peers[key];
@@ -153,23 +161,41 @@ class Peer{
     this._save();
 
   }
-
+*/
   listen(){
-      var port = this.config.get("DISCOVERY_PORT");
-      var networkkey = this.config.get("NETWORK_KEY");
-      this.sw.listen(port);
-      console.log('[' + (new Date()).toLocaleString()+'] peer Listening to discovery port : ' + port)
-      this.sw.join(networkkey);
-      console.log('[' + (new Date()).toLocaleString()+'] peer Join network : ' + networkkey);
-      //var port = this.config.get("P2P_PORT");
-      var parent = this;
-      
-      this.sw.on("connection",function(conn, info){
+    var parent = this;
+    publicIp.v4()
+    .then(ip => {
+      parent.publicip = ip;
+      console.log('[' + (new Date()).toLocaleString()+'] public ip is ' + parent.publicip);
+      var nodeidfile = path.join(parent.config.getHomeDir(),".nodeid");
+      if(fs.existsSync(nodeidfile)){
+        parent.nodeid = fs.readFileSync(nodeidfile,'utf8');
+      }else{
+        parent.nodeid = parent.publicip + ":" + parent.P2P_PORT + "@" + parent.nodeid;
+        fs.writeFileSync(nodeidfile,parent.nodeid,'utf8');
+      }
+      parent.nodeid = parent.nodeid.trim();
+      parent.discovery_config = defaults({
+        id:parent.nodeid,
+        maxConnections:50,
+        //whitelist:this.getPeerIps(),
+        keepExistingConnections: false 
+      });
+      parent.sw = Swarm(parent.discovery_config);
+      console.log('[' + (new Date()).toLocaleString()+'] start node ' + parent.nodeid);
+      parent.sw.listen(parent.DISCOVERY_PORT);
+      console.log('[' + (new Date()).toLocaleString()+'] peer Listening to discovery port : ' + parent.DISCOVERY_PORT);
+      parent.sw.join(parent.NETWORK_KEY);
+      console.log('[' + (new Date()).toLocaleString()+'] peer Join network : ' + parent.NETWORK_KEY);
+      parent.sw.on("connection",function(conn, info){
         var host = info.host;
         var id = info.id.toString();
         if(parent.nodeid == id) return;
         console.log('[' + (new Date()).toLocaleString()+ '] peer Connected peer from '+ id + '(' + host + ')');
-        var port = parent.config.get("P2P_PORT");
+        parent.setPeer({"id":id,"host":host,"port":info.port,"type":info.type},true);
+        /*
+        var port = parent.P2P_PORT;
         tcpscan.run({host:host,port:port}).then(
           () => {
             var p = {hostname:host, port:port, status:-1, id:id, failed:0};
@@ -189,14 +215,23 @@ class Peer{
             console.log('[' + (new Date()).toLocaleString()+'] peer Peer ' + host + ' is no listen ' + port + ' port.');
             //parent.setPeer(p);
           }
-        );
+        );*/
       });
-      this.sw.on('connection-closed',function(conn, info){
-        publicIp.v4().then(ip => {
-          if(ip == info.host && ip.address() == info.host && parent.DISCOVERY_PORT == info.port) return;
-          console.log('[' + (new Date()).toLocaleString()+'] peer Closed discovery peer from ' + info.host);
+      parent.sw.on('connection-closed',function(conn, info){
+        if(info.initiator == false || info.channel == null || (info.channel.toString() != parent.NETWORK_KEY)) return;
+        publicIp.v4()
+        .then(ip => {
+            //console.log('[' + (new Date()).toLocaleString()+'] peer closed ip : ' + ip);
+            if(info.host.indexOf(ip) > -1 && parent.DISCOVERY_PORT == info.port) return;
+            if (info.id != null && parent.peers[info.id.toString()]){
+              //delete parent.peers[info.id.toString()];
+              //console.log('[' + (new Date()).toLocaleString()+'] peer Closed : ' + JSON.stringify(info));
+              console.log('[' + (new Date()).toLocaleString()+'] peer Closed discovery peer from ' + info.host);
+            }
         });
       });
+
+    });
   }
 
   /*
@@ -263,11 +298,11 @@ class Peer{
   getPeerIps(){
     var ips = [];
     for(var id in this.peers){
-    ips.push(this.peers[id].hostname);
+      ips.push(this.peers[id].hostname);
     }
   }
   
-  urls(){
+  getUrls(){
     var urls = [];
     for(var id in this.peers){
         urls.push(this._geturl(peers[id]));
@@ -275,8 +310,12 @@ class Peer{
     return urls;
   }
 
-  peers(){
+  getPeers(){
     return this.peers;
+  }
+
+  getStatus(){
+    return {"connecting":this.sw.connecting,"queued":this.sw.queued,"connected":this.sw.connected,"peer_count":this.peers.length}
   }
 
   /*

@@ -32,7 +32,7 @@ class Config{
             this.home_dir = home_dir;
         } 
         
-        this.filepath = path.join(home_dir,"ohenro_config.json");
+        this.filepath = path.join(this.home_dir,"ohenro_config.json");
         if(fs.existsSync(this.filepath)){
             this.load();
         }else {

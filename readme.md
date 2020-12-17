@@ -31,6 +31,9 @@ npm run test
 npm run dev
 ```
 
+### エラーが発生する場合
+
+
 ### docker-composeを利用してアプリを実行する
 
 ```sh
